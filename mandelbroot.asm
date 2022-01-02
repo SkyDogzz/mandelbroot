@@ -12,7 +12,7 @@ extern XSetForeground
 extern XDrawLine
 extern XNextEvent
 
-; external functions from stdio library (ld-linux-x86-64.so.2)    
+; external functions from stdio library (ld-linux-x86-64.so.2)
 extern printf
 extern exit
 
