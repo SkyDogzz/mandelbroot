@@ -80,23 +80,13 @@ cvtss2sd xmm1, dword[zoom]
 mulsd xmm0, xmm1
 movsd qword[size_x], xmm0
 
+.calcul size_y
 cvtss2sd xmm0, dword[size_y2]
 cvtss2sd xmm1, dword[size_y1]
 subsd xmm0, xmm1
 cvtss2sd xmm1, dword[zoom]
 mulsd xmm0, xmm1
 movsd qword[size_y], xmm0
-
-movsd xmm0, qword[size_x]
-movsd xmm1, qword[size_y]
-
-push rbp
-
-mov rdi, print
-mov rax, 2
-call printf
-
-pop rbp
 
 xor     rdi,rdi
 call    XOpenDisplay	; Création de display
