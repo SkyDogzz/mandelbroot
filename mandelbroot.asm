@@ -34,7 +34,7 @@ global main
 
 section .bss
 display_name:	resq	1
-screen:			resd	1
+screen:		resd	1
 depth:         	resd	1
 connection:    	resd	1
 width:         	resd	1
@@ -50,6 +50,15 @@ x1:	dd	0
 x2:	dd	0
 y1:	dd	0
 y2:	dd	0
+
+size_x1:	dd	-2.1
+size_x2:	dd	0.6
+size_y1:	dd	-1.2
+size_y2:	dd	1.2
+
+zoom:		dd	100
+
+iteration_max:	dd	50
 
 section .text
 
