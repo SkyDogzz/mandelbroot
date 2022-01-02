@@ -15,8 +15,8 @@ then	echo "Assemblage OK"
 		if [ $? -eq 0 ]
 		then	echo "Fichier exécutable '$nom' créé"
 		rm *.o
-		echo "$1.o supprimé"
+		echo "$nom.o supprimé"
 		rm *.lst
-		echo "$1.lst supprimé"
+		echo "$nom.lst supprimé"
 		fi
 fi
