@@ -42,6 +42,9 @@ height:        	resd	1
 window:		resq	1
 gc:		resq	1
 
+size_x:		resq	1
+size_y:		resq	1
+
 section .data
 
 event:		times	24 dq 0
@@ -56,9 +59,11 @@ size_x2:	dd	0.6
 size_y1:	dd	-1.2
 size_y2:	dd	1.2
 
-zoom:		dd	100
+zoom:		dd	100.0
 
 iteration_max:	dd	50
+
+print:	db	"%f    %f", 10, 0
 
 section .text
 
@@ -67,6 +72,32 @@ section .text
 ;##################################################
 
 main:
+;calcul size_x
+cvtss2sd xmm0, dword[size_x2]
+cvtss2sd xmm1, dword[size_x1]
+subsd xmm0, xmm1
+cvtss2sd xmm1, dword[zoom]
+mulsd xmm0, xmm1
+movsd qword[size_x], xmm0
+
+cvtss2sd xmm0, dword[size_y2]
+cvtss2sd xmm1, dword[size_y1]
+subsd xmm0, xmm1
+cvtss2sd xmm1, dword[zoom]
+mulsd xmm0, xmm1
+movsd qword[size_y], xmm0
+
+movsd xmm0, qword[size_x]
+movsd xmm1, qword[size_y]
+
+push rbp
+
+mov rdi, print
+mov rax, 2
+call printf
+
+pop rbp
+
 xor     rdi,rdi
 call    XOpenDisplay	; Création de display
 mov     qword[display_name],rax	; rax=nom du display
