@@ -52,7 +52,7 @@ y1:	dd	0
 y2:	dd	0
 
 section .text
-	
+
 ;##################################################
 ;########### PROGRAMME PRINCIPAL ##################
 ;##################################################
@@ -167,7 +167,7 @@ mov rdi,qword[display_name]
 mov rsi,qword[gc]
 mov edx,0x0000FF	; Couleur du crayon ; bleu
 call XSetForeground
-; coordonnées de la ligne 3	
+; coordonnées de la ligne 3
 mov dword[x1],275
 mov dword[y1],50
 mov dword[x2],275
@@ -187,7 +187,7 @@ mov rdi,qword[display_name]
 mov rsi,qword[gc]
 mov edx,0xFF00FF	; Couleur du crayon ; violet
 call XSetForeground
-; coordonnées de la ligne 4	
+; coordonnées de la ligne 4
 mov dword[x1],350
 mov dword[y1],50
 mov dword[x2],350
@@ -213,6 +213,7 @@ call XFlush
 jmp boucle
 mov rax,34
 syscall
+ret
 
 closeDisplay:
     mov     rax,qword[display_name]
@@ -220,4 +221,3 @@ closeDisplay:
     call    XCloseDisplay
     xor	    rdi,rdi
     call    exit
-	
