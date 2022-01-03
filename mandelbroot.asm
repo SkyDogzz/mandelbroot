@@ -80,7 +80,7 @@ cvtss2sd xmm1, dword[zoom]
 mulsd xmm0, xmm1
 movsd qword[size_x], xmm0
 
-.calcul size_y
+;calcul size_y
 cvtss2sd xmm0, dword[size_y2]
 cvtss2sd xmm1, dword[size_y1]
 subsd xmm0, xmm1
