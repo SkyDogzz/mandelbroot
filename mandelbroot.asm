@@ -45,6 +45,11 @@ gc:		resq	1
 size_x:		resq	1
 size_y:		resq	1
 
+c_r:    resq    1
+c_i:    resq    1
+z_r:    resq    1
+z_i:    resq    1
+
 section .data
 
 event:		times	24 dq 0
@@ -58,6 +63,9 @@ size_x1:	dd	-2.1
 size_x2:	dd	0.6
 size_y1:	dd	-1.2
 size_y2:	dd	1.2
+
+x:  dd  0
+y:  dd  0
 
 zoom:		dd	100.0
 
@@ -87,6 +95,27 @@ subsd xmm0, xmm1
 cvtss2sd xmm1, dword[zoom]
 mulsd xmm0, xmm1
 movsd qword[size_y], xmm0
+
+for_image_x:
+    for_image_y:
+
+    movsd xmm0, qword[size_y]
+    cvtss2sd xmm1, dword[y]
+    ucomisd xmm1, xmm0
+    add dword[y], 1
+    jb for_image_y
+    
+movsd xmm0, qword[size_x]
+cvtss2sd xmm1, dword[x]
+ucomisd xmm1, xmm0
+add dword[x], 1
+jb for_image_x
+
+push rbp
+mov rdi, print
+mov rax, 2
+call printf
+pop rbp
 
 xor     rdi,rdi
 call    XOpenDisplay	; Création de display
