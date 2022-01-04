@@ -104,38 +104,38 @@ movsd qword[size_y], xmm0
 
 mov dword[x], 0
 for_image_x:
-    mov dword[y], 0
-    for_image_y:
-        ;c_r = size_x / zoom + size_x1
-        movsd xmm0, qword[size_x]
-        cvtss2sd xmm1, dword[zoom]
-        divsd xmm0, xmm1
-        cvtss2sd xmm1, dword[size_x1]
-        addsd xmm0, xmm1
-        movsd qword[c_r], xmm0
+mov dword[y], 0
+for_image_y:
+;c_r = size_x / zoom + size_x1
+movsd xmm0, qword[size_x]
+cvtss2sd xmm1, dword[zoom]
+divsd xmm0, xmm1
+cvtss2sd xmm1, dword[size_x1]
+addsd xmm0, xmm1
+movsd qword[c_r], xmm0
         
-        ;c_i = size_y / zoom + size_y1
-        movsd xmm0, qword[size_y]
-        cvtss2sd xmm1, dword[zoom]
-        divsd xmm0, xmm1
-        cvtss2sd xmm1, dword[size_y1]
-        addsd xmm0, xmm1
-        movsd qword[c_i], xmm0
+;c_i = size_y / zoom + size_y1
+movsd xmm0, qword[size_y]
+cvtss2sd xmm1, dword[zoom]
+divsd xmm0, xmm1
+cvtss2sd xmm1, dword[size_y1]
+addsd xmm0, xmm1
+movsd qword[c_i], xmm0
 
-        ;z_r = 0
-        mov qword[z_r], 0
+;z_r = 0
+mov qword[z_r], 0
 
-        ;z_i = 0
-        mov qword[z_i], 0
+;z_i = 0
+mov qword[z_i], 0
 
-        ;i = 0
-        mov qword[i], 0
+;i = 0
+mov qword[i], 0
 
-    movsd xmm0, qword[size_y]
-    cvtsi2sd xmm1, dword[y]
-    add dword[y], 1
-    ucomisd xmm1, xmm0
-    jb for_image_y
+movsd xmm0, qword[size_y]
+cvtsi2sd xmm1, dword[y]
+add dword[y], 1
+ucomisd xmm1, xmm0
+jb for_image_y
 
 movsd xmm0, qword[size_x]
 cvtsi2sd xmm1, dword[x]
