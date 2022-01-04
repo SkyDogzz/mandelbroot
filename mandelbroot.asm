@@ -45,6 +45,9 @@ gc:		resq	1
 size_x:		resq	1
 size_y:		resq	1
 
+x:  resd    1
+y:  resd    1
+
 c_r:    resq    1
 c_i:    resq    1
 z_r:    resq    1
@@ -64,16 +67,16 @@ size_x2:	dd	0.6
 size_y1:	dd	-1.2
 size_y2:	dd	1.2
 
-x:  dd  0
-y:  dd  0
-
 zoom:		dd	100.0
 
 iteration_max:	dd	50
 
 i:  dd  0
 
+cpt:    dd  0
+
 print:	db	"--%f---%f--", 10, 0
+printi: db  "----%d----", 10, 0
 aled:   db  "aaaaaaaaa", 10, 0
 
 section .text
@@ -99,9 +102,10 @@ cvtss2sd xmm1, dword[zoom]
 mulsd xmm0, xmm1
 movsd qword[size_y], xmm0
 
+mov dword[x], 0
 for_image_x:
+    mov dword[y], 0
     for_image_y:
-
         ;c_r = size_x / zoom + size_x1
         movsd xmm0, qword[size_x]
         cvtss2sd xmm1, dword[zoom]
@@ -126,21 +130,17 @@ for_image_x:
 
         ;i = 0
         mov qword[i], 0
-        movsd xmm0, qword[c_i]
-        movsd xmm1, qword[c_r]
-
-        
 
     movsd xmm0, qword[size_y]
-    cvtss2sd xmm1, dword[y]
-    ucomisd xmm1, xmm0
+    cvtsi2sd xmm1, dword[y]
     add dword[y], 1
+    ucomisd xmm1, xmm0
     jb for_image_y
-    
+
 movsd xmm0, qword[size_x]
-cvtss2sd xmm1, dword[x]
-ucomisd xmm1, xmm0
+cvtsi2sd xmm1, dword[x]
 add dword[x], 1
+ucomisd xmm1, xmm0
 jb for_image_x
 
 push rbp
