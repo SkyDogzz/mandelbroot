@@ -10,6 +10,7 @@ extern XFlush
 extern XCreateGC
 extern XSetForeground
 extern XDrawLine
+extern XDrawPoint
 extern XNextEvent
 
 ; external functions from stdio library (ld-linux-x86-64.so.2)
@@ -52,6 +53,9 @@ c_r:    resq    1
 c_i:    resq    1
 z_r:    resq    1
 z_i:    resq    1
+tmp:    resq    1
+
+var:    resq    1
 
 section .data
 
@@ -69,14 +73,17 @@ size_y2:	dd	1.2
 
 zoom:		dd	100.0
 
-iteration_max:	dd	50
+iteration_max:	dq	50
 
 i:  dq  0
 
-cpt:    dq  10
+cpt:    dq  0
+cpt2:    dq  0
+cpt3:    dq  0
 
 print:	db	"--%f---%f--", 10, 0
 printi: db  "----%d----", 10, 0
+printi2: db  "----%d----%d---", 10, 0
 aled:   db  "aaaaaaaaa", 10, 0
 
 section .text
@@ -132,6 +139,59 @@ mov qword[z_i], 0
 ;i = 0
 mov qword[i], 0
 
+do_while:
+add qword[cpt2], 1
+
+mov rax, qword[z_r]
+mov qword[tmp], rax
+
+;z_r = z_r*z_r - z_i*z_i + c_r
+movsd xmm0, qword[z_r]
+mulsd xmm0, xmm0
+movsd xmm1, qword[z_i]
+mulsd xmm1, xmm1
+subsd xmm0, xmm1
+addsd xmm0, qword[c_r]
+
+movsd xmm0, qword[z_i]
+mov qword[var], 2
+mulsd xmm0, qword[var]
+mulsd xmm0, qword[tmp]
+addsd xmm0, qword[c_i]
+
+add qword[i], 1
+
+movsd xmm0, qword[z_r]
+mulsd xmm0, xmm0
+movsd xmm1, qword[z_i]
+mulsd xmm1, xmm1
+addsd xmm0, xmm1
+mov qword[var], 4
+cvtsi2sd xmm1, qword[var]
+ucomisd xmm0, xmm1
+jae end_while
+
+mov rbx, qword[i]
+cmp rbx, qword[iteration_max]
+jb do_while
+
+end_while:
+
+mov rbx, qword[i]
+push rbp
+mov rdi, printi2
+mov rsi, rbx
+mov rdx, qword[iteration_max]
+mov rax, 0
+call printf
+pop rbp
+cmp rbx, qword[iteration_max]
+ja no_if
+jb no_if
+add qword[cpt3], 1
+
+no_if:
+
 movsd xmm0, qword[size_y]
 cvtsi2sd xmm1, dword[y]
 add dword[y], 1
@@ -151,6 +211,16 @@ call printf
 
 mov rdi, printi
 mov rsi, qword[cpt]
+mov rax, 0
+call printf
+
+mov rdi, printi
+mov rsi, qword[cpt2]
+mov rax, 0
+call printf
+
+mov rdi, printi
+mov rsi, qword[cpt3]
 mov rax, 0
 call printf
 pop rbp
@@ -238,6 +308,13 @@ mov r8d,dword[y1]	; coordonnée source en y
 mov r9d,dword[x2]	; coordonnée destination en x
 push qword[y2]		; coordonnée destination en y
 call XDrawLine
+
+mov rdi,qword[display_name]
+mov rsi,qword[window]
+mov rdx,qword[gc]
+mov ecx,1	; coordonnée source en x
+mov r8d,1	; coordonnée source en y
+call XDrawPoint
 
 ;couleur de la ligne 2
 mov rdi,qword[display_name]
