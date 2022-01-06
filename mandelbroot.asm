@@ -71,9 +71,9 @@ zoom:		dd	100.0
 
 iteration_max:	dd	50
 
-i:  dd  0
+i:  dq  0
 
-cpt:    dd  0
+cpt:    dq  10
 
 print:	db	"--%f---%f--", 10, 0
 printi: db  "----%d----", 10, 0
@@ -106,6 +106,7 @@ mov dword[x], 0
 for_image_x:
 mov dword[y], 0
 for_image_y:
+add qword[cpt], 1
 ;c_r = size_x / zoom + size_x1
 movsd xmm0, qword[size_x]
 cvtss2sd xmm1, dword[zoom]
@@ -146,6 +147,11 @@ jb for_image_x
 push rbp
 mov rdi, print
 mov rax, 2
+call printf
+
+mov rdi, printi
+mov rsi, qword[cpt]
+mov rax, 0
 call printf
 pop rbp
 
