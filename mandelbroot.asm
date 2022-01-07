@@ -46,9 +46,6 @@ gc:		resq	1
 size_x:		resq	1
 size_y:		resq	1
 
-size2_x:		resd	1
-size2_y:		resd	1
-
 x:  resd    1
 y:  resd    1
 
@@ -119,13 +116,13 @@ mov qword[size_x], rax
 cvtsd2si rax, qword[size_y]
 mov qword[size_y], rax
 
-push rbp
-mov rdi, printi2
-mov rsi, qword[size_x]
-mov rdx, qword[size_y]
-mov rax, 0
-call printf
-pop rbp
+;push rbp
+;mov rdi, printi2
+;mov rsi, qword[size_x]
+;mov rdx, qword[size_y]
+;mov rax, 0
+;call printf
+;pop rbp
 
 xor    rdi,rdi
 call    XOpenDisplay	; Création de display
@@ -148,6 +145,14 @@ mov rdx,10
 mov rcx,10
 mov r8,qword[size_x]	; largeur
 mov r9,qword[size_y]	; hauteur
+
+mov rax, qword[size_x]
+cvtsi2sd xmm0, rax
+movsd qword[size_x], xmm0
+
+mov rax, qword[size_y]
+cvtsi2sd xmm0, rax
+movsd qword[size_y], xmm0
 
 push 0xFFFFFF	; background  0xRRGGBB
 push 0x00FF00
@@ -272,6 +277,13 @@ cmp rbx, qword[iteration_max]
 ja no_if
 jb no_if
 add qword[cpt3], 1
+;push rbp
+;mov rdi, printi2
+;mov rax, 0
+;movsx rsi, dword[x]
+;movsx rdx, dword[y]
+;call printf
+;pop rbp
 mov rdi,qword[display_name]
 mov rsi,qword[window]
 mov rdx,qword[gc]
@@ -292,6 +304,8 @@ cvtsi2sd xmm1, dword[x]
 add dword[x], 1
 ucomisd xmm1, xmm0
 jb for_image_x
+
+
 
 ; ############################
 ; # FIN DE LA ZONE DE DESSIN #
