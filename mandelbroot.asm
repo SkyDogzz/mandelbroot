@@ -175,7 +175,6 @@ mov rax, qword[size_y]
 cvtsi2sd xmm0, rax
 movsd qword[size_y], xmm0
 
-
 push 0xFFFFFF	; background  0xRRGGBB
 push 0x00FF00
 push 1
@@ -208,9 +207,9 @@ call XNextEvent
 cmp dword[event],ConfigureNotify	; à l'apparition de la fenêtre
 je dessin							; on saute au label 'dessin'
 
-;cmp dword[event],KeyPress			; Si on appuie sur une touche
-;je closeDisplay						; on saute au label 'closeDisplay' qui ferme la fenêtre
-;jmp boucle
+cmp dword[event],KeyPress			; Si on appuie sur une touche
+je closeDisplay						; on saute au label 'closeDisplay' qui ferme la fenêtre
+jmp boucle
 
 ;#########################################
 ;#		DEBUT DE LA ZONE DE DESSIN		 #
@@ -260,6 +259,7 @@ subsd xmm0, xmm1
 addsd xmm0, qword[c_r]
 movsd qword[z_r], xmm0
 
+;z_i = 2*r*tmp + c_i
 movsd xmm0, qword[z_i]
 mov qword[var], 2
 cvtsi2sd xmm1, qword[var]
@@ -303,7 +303,7 @@ jmp suite
 
 no_if:
 
-cvtsi2sd xmm1, qword[i]
+cvtsi2sd xmm0, qword[i]
 mov rax, 255
 cvtsi2sd xmm1, rax
 mulsd xmm0, xmm1
@@ -316,7 +316,7 @@ mov rdi,qword[display_name]
 mov rsi,qword[gc]
 mov rdx, 0x000000
 add rdx, [color]
-add rdx, 40
+add rdx, 60
 call XSetForeground
 mov rdi,qword[display_name]
 mov rsi,qword[window]
