@@ -16,6 +16,7 @@ extern XNextEvent
 ; external functions from stdio library (ld-linux-x86-64.so.2)
 extern printf
 extern exit
+extern puts
 
 %define	StructureNotifyMask	131072
 %define KeyPressMask		1
@@ -59,6 +60,8 @@ var:    resq    1
 
 color:  resd    1
 
+argc:  resq    1
+
 section .data
 
 event:		times	24 dq 0
@@ -73,7 +76,7 @@ size_x2:	dd	0.6
 size_y1:	dd	-1.2
 size_y2:	dd  1.2
 
-zoom:		dd	100.0
+zoom:		dd	300.0
 
 cpt:        dq  0
 
@@ -82,6 +85,7 @@ iteration_max:	dq	50
 i:  dq  0
 
 print:  db  "%d", 10, 0
+format: db  "%s", 10, 0
 
 section .text
 
@@ -90,6 +94,21 @@ section .text
 ;##################################################
 
 main:
+push    rdi                             ; save registers that puts uses
+push    rsi
+sub     rsp, 8                  ; must align stack before call
+
+mov     rdi, [rsi]              ; the argument string to display
+call    puts                    ; print it
+
+add     rsp, 8                  ; restore %rsp to pre-aligned value
+pop     rsi                     ; restore registers puts used
+pop     rdi
+
+add     rsi, 8                  ; point to next argument
+dec     rdi                     ; count down
+jnz     main                    ; if not done counting keep going
+
 ;calcul size_x
 cvtss2sd xmm0, dword[size_x2]
 cvtss2sd xmm1, dword[size_x1]
