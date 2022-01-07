@@ -84,6 +84,7 @@ iteration_max:	dq	50
 
 i:  dq  0
 
+too_much_args:  db  "Use : ./mandelbroot x1 x2 y1 y2 zoom iteration", 10, 0
 print:  db  "%d", 10, 0
 format: db  "%s", 10, 0
 
@@ -94,12 +95,12 @@ section .text
 ;##################################################
 
 main:
-push    rdi                             ; save registers that puts uses
+add qword[cpt], 1
+push    rdi                     ; save registers that puts uses
 push    rsi
 sub     rsp, 8                  ; must align stack before call
 
 mov     rdi, [rsi]              ; the argument string to display
-call    puts                    ; print it
 
 add     rsp, 8                  ; restore %rsp to pre-aligned value
 pop     rsi                     ; restore registers puts used
@@ -108,6 +109,21 @@ pop     rdi
 add     rsi, 8                  ; point to next argument
 dec     rdi                     ; count down
 jnz     main                    ; if not done counting keep going
+
+cmp qword[cpt], 6
+jb not_too_much
+
+too_much:
+push rbp
+mov rdi, too_much_args
+mov rax, 0
+call printf
+pop rbp
+syscall
+ret
+call exit
+
+not_too_much:
 
 ;calcul size_x
 cvtss2sd xmm0, dword[size_x2]
@@ -345,3 +361,4 @@ closeDisplay:
     call    XCloseDisplay
     xor	    rdi,rdi
     call    exit
+
