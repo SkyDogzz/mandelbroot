@@ -7,12 +7,10 @@ int main(int argc, char **argv)
     float x2 = 0.6;
     float y1 = -1.2;
     float y2 = 1.2;
-    int cpt = 0;
-    int cpt2 = 0;
-    int cpt3 = 0;
 
     float c_r, c_i, z_r, z_i, tmp;
     int i;
+    int cpt = 0;
 
     int zoom = 100;
     int iteration_max = 50;
@@ -28,8 +26,6 @@ int main(int argc, char **argv)
     {
         for (int y = 0; y < image_y; y++)
         {
-            cpt++;
-
             c_r = x / zoom + x1;
             c_i = y / zoom + y1;
             z_r = 0;
@@ -42,16 +38,15 @@ int main(int argc, char **argv)
                 z_r = z_r * z_r - z_i * z_i + c_r;
                 z_i = 2 * z_i * tmp + c_i;
                 i = i + 1;
-                cpt3++;
             } while (z_r * z_r + z_i * z_i < 4 && i < iteration_max);
             if (i == iteration_max)
             {
-                cpt2++;
+                cpt++;
+                printf("__%d__%d__\n", x, y);
             }
         }
     }
-
-    printf("%d\n%d\n", cpt, cpt2);
+    printf("%d", cpt);
 
     return EXIT_SUCCESS;
 }

@@ -69,18 +69,15 @@ y2:	dd	0
 size_x1:	dd	-2.1
 size_x2:	dd	0.6
 size_y1:	dd	-1.2
-size_y2:	dd	1.2
+size_y2:	dd  1.2
 
 zoom:		dd	100.0
+
+cpt:        dq  0
 
 iteration_max:	dq	50
 
 i:  dq  0
-
-print:	db	"--%f---%f--", 10, 0
-printi: db  "----%d----", 10, 0
-printi2: db  "----%d----%d---", 10, 0
-aled:   db  "aaaaaaaaa", 10, 0
 
 section .text
 
@@ -111,14 +108,6 @@ cvtsd2si rax, qword[size_x]
 mov qword[size_x], rax
 cvtsd2si rax, qword[size_y]
 mov qword[size_y], rax
-
-;push rbp
-;mov rdi, printi2
-;mov rsi, qword[size_x]
-;mov rdx, qword[size_y]
-;mov rax, 0
-;call printf
-;pop rbp
 
 xor    rdi,rdi
 call    XOpenDisplay	; Création de display
@@ -188,9 +177,9 @@ call XNextEvent
 cmp dword[event],ConfigureNotify	; à l'apparition de la fenêtre
 je dessin							; on saute au label 'dessin'
 
-cmp dword[event],KeyPress			; Si on appuie sur une touche
-je closeDisplay						; on saute au label 'closeDisplay' qui ferme la fenêtre
-jmp boucle
+;cmp dword[event],KeyPress			; Si on appuie sur une touche
+;je closeDisplay						; on saute au label 'closeDisplay' qui ferme la fenêtre
+;jmp boucle
 
 ;#########################################
 ;#		DEBUT DE LA ZONE DE DESSIN		 #
@@ -242,7 +231,8 @@ movsd qword[z_r], xmm0
 
 movsd xmm0, qword[z_i]
 mov qword[var], 2
-mulsd xmm0, qword[var]
+cvtsi2sd xmm1, qword[var]
+mulsd xmm0, xmm1
 mulsd xmm0, qword[tmp]
 addsd xmm0, qword[c_i]
 movsd qword[z_i], xmm0
@@ -267,8 +257,8 @@ end_while:
 
 mov rbx, qword[i]
 cmp rbx, qword[iteration_max]
-ja no_if
 jb no_if
+add qword[cpt], 1
 mov rdi,qword[display_name]
 mov rsi,qword[window]
 mov rdx,qword[gc]
