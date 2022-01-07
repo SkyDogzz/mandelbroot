@@ -57,6 +57,8 @@ tmp:    resq    1
 
 var:    resq    1
 
+color:  resd    1
+
 section .data
 
 event:		times	24 dq 0
@@ -78,6 +80,8 @@ cpt:        dq  0
 iteration_max:	dq	50
 
 i:  dq  0
+
+print:  db  "%d", 10, 0
 
 section .text
 
@@ -163,11 +167,6 @@ mov rdx,0
 mov rcx,0
 call XCreateGC
 mov qword[gc],rax
-
-mov rdi,qword[display_name]
-mov rsi,qword[gc]
-mov rdx,0x000000	; Couleur du crayon
-call XSetForeground
 
 boucle: ; boucle de gestion des évènements
 mov rdi,qword[display_name]
@@ -258,7 +257,35 @@ end_while:
 mov rbx, qword[i]
 cmp rbx, qword[iteration_max]
 jb no_if
-add qword[cpt], 1
+mov rdi,qword[display_name]
+mov rsi,qword[gc]
+mov rdx,0x000000	; Couleur du crayon
+call XSetForeground
+mov rdi,qword[display_name]
+mov rsi,qword[window]
+mov rdx,qword[gc]
+mov ecx,dword[x]	; coordonnée source en x
+mov r8d,dword[y]	; coordonnée source en y
+call XDrawPoint
+jmp suite
+
+no_if:
+
+cvtsi2sd xmm1, qword[i]
+mov rax, 255
+cvtsi2sd xmm1, rax
+mulsd xmm0, xmm1
+cvtsi2sd xmm1, qword[iteration_max]
+divsd xmm0, xmm1
+cvtsd2si eax, xmm0
+mov dword[color], eax
+
+mov rdi,qword[display_name]
+mov rsi,qword[gc]
+mov rdx, 0x000000
+add rdx, [color]
+add rdx, 40
+call XSetForeground
 mov rdi,qword[display_name]
 mov rsi,qword[window]
 mov rdx,qword[gc]
@@ -266,7 +293,7 @@ mov ecx,dword[x]	; coordonnée source en x
 mov r8d,dword[y]	; coordonnée source en y
 call XDrawPoint
 
-no_if:
+suite:
 
 movsd xmm0, qword[size_y]
 cvtsi2sd xmm1, dword[y]
