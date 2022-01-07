@@ -77,10 +77,6 @@ iteration_max:	dq	50
 
 i:  dq  0
 
-cpt:    dq  0
-cpt2:    dq  0
-cpt3:    dq  0
-
 print:	db	"--%f---%f--", 10, 0
 printi: db  "----%d----", 10, 0
 printi2: db  "----%d----%d---", 10, 0
@@ -154,11 +150,15 @@ mov rax, qword[size_y]
 cvtsi2sd xmm0, rax
 movsd qword[size_y], xmm0
 
+
 push 0xFFFFFF	; background  0xRRGGBB
 push 0x00FF00
 push 1
 call XCreateSimpleWindow
 mov qword[window],rax
+pop rbp
+pop rbp
+pop rbp
 
 mov rdi,qword[display_name]
 mov rsi,qword[window]
@@ -201,9 +201,8 @@ mov dword[x], 0
 for_image_x:
 mov dword[y], 0
 for_image_y:
-add qword[cpt], 1
 ;c_r = size_x / zoom + size_x1
-movsd xmm0, qword[size_x]
+cvtsi2sd xmm0, dword[x]
 cvtss2sd xmm1, dword[zoom]
 divsd xmm0, xmm1
 cvtss2sd xmm1, dword[size_x1]
@@ -211,7 +210,7 @@ addsd xmm0, xmm1
 movsd qword[c_r], xmm0
         
 ;c_i = size_y / zoom + size_y1
-movsd xmm0, qword[size_y]
+cvtsi2sd xmm0, dword[y]
 cvtss2sd xmm1, dword[zoom]
 divsd xmm0, xmm1
 cvtss2sd xmm1, dword[size_y1]
@@ -228,10 +227,9 @@ mov qword[z_i], 0
 mov qword[i], 0
 
 do_while:
-add qword[cpt2], 1
 
-mov rax, qword[z_r]
-mov qword[tmp], rax
+movsd xmm0, qword[z_r]
+movsd qword[tmp], xmm0
 
 ;z_r = z_r*z_r - z_i*z_i + c_r
 movsd xmm0, qword[z_r]
@@ -240,12 +238,14 @@ movsd xmm1, qword[z_i]
 mulsd xmm1, xmm1
 subsd xmm0, xmm1
 addsd xmm0, qword[c_r]
+movsd qword[z_r], xmm0
 
 movsd xmm0, qword[z_i]
 mov qword[var], 2
 mulsd xmm0, qword[var]
 mulsd xmm0, qword[tmp]
 addsd xmm0, qword[c_i]
+movsd qword[z_i], xmm0
 
 add qword[i], 1
 
@@ -266,24 +266,9 @@ jb do_while
 end_while:
 
 mov rbx, qword[i]
-;push rbp
-;mov rdi, printi2
-;mov rsi, rbx
-;mov rdx, qword[iteration_max]
-;mov rax, 0
-;call printf
-;pop rbp
 cmp rbx, qword[iteration_max]
 ja no_if
 jb no_if
-add qword[cpt3], 1
-;push rbp
-;mov rdi, printi2
-;mov rax, 0
-;movsx rsi, dword[x]
-;movsx rdx, dword[y]
-;call printf
-;pop rbp
 mov rdi,qword[display_name]
 mov rsi,qword[window]
 mov rdx,qword[gc]
@@ -304,8 +289,6 @@ cvtsi2sd xmm1, dword[x]
 add dword[x], 1
 ucomisd xmm1, xmm0
 jb for_image_x
-
-
 
 ; ############################
 ; # FIN DE LA ZONE DE DESSIN #
