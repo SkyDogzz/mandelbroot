@@ -316,7 +316,7 @@ mov rdi,qword[display_name]
 mov rsi,qword[gc]
 mov rdx, 0x000000
 add rdx, [color]
-add rdx, 60
+add rdx, 30
 call XSetForeground
 mov rdi,qword[display_name]
 mov rsi,qword[window]
