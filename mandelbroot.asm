@@ -37,10 +37,6 @@ global main
 section .bss
 display_name:	resq	1
 screen:		resd	1
-depth:         	resd	1
-connection:    	resd	1
-width:         	resd	1
-height:        	resd	1
 window:		resq	1
 gc:		resq	1
 
@@ -95,6 +91,7 @@ section .text
 ;##################################################
 
 main:
+push rbp
 add qword[cpt], 1
 push    rdi                     ; save registers that puts uses
 push    rsi
@@ -352,6 +349,7 @@ mov rdi,qword[display_name]
 call XFlush
 jmp boucle
 mov rax,34
+pop rbp
 syscall
 ret
 
